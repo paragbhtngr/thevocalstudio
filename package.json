@@ -1,0 +1,11 @@
+{
+  "name": "thevocalstudioserver",
+  "version": "1.0.0",
+  "description": "Server backend for The Vocal Studio application and CMS dashboard. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Parag Bhatnagar",
+  "license": "ISC"
+}

@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
     res.end()
 })
 
-// TODO: Create New User
+// TODO: Optimise new user to make 1 query instead of 2
 router.post('/createnewuser', (req, res) => {
     // Received create user request
     let user = req.body
@@ -35,7 +35,6 @@ router.post('/createnewuser', (req, res) => {
         if (error) {
             throw error
         }
-
         console.log('Users in DB: ', results)
         // If user already exists
         if(results.length > 0) {
@@ -89,8 +88,44 @@ router.post('/changepw', (req, res) => {
 
 // TODO: Delete User
 router.post('/deleteuser', (req, res) => {
-    res.end()
-})  
+    // Received delete user request
+    let user = req.body
+    console.log(user);
+    // Check if user with email address already exists
+    const queryString = `SELECT * FROM users WHERE email_address = '${user.emailAddress}'`
+    connection.query(queryString, (error, results, fields) => {
+        if (error) {
+            throw error
+        }
+        console.log('Users in DB: ', results)
+        // If user already exists
+        if(results.length === 0) {
+            console.log(`USER DOESN'T EXIST`)
+            // Return Error Message: User Exists
+            res.send({
+                "code":400,
+                "failed":"user_not_found",
+                "message":"User does not exist in database"
+            })
+            return
+        } else {
+            //Create new user
+            console.log("DELETING USER")
+            const queryString = `DELETE FROM users WHERE email_address = '${user.emailAddress}'`
+            connection.query(queryString, (error, results, fields) => {
+                if (error) {
+                    throw error
+                }
+            })
+            res.send({
+                "code":200,
+                "succeeded":"user_deleted",
+                "message":"User successfully deleted from database"
+            })
+            return
+        }
+    })
+})
 
 
 // Helper functions

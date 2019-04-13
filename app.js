@@ -1,5 +1,7 @@
 import express from 'express'
 import morgan from 'morgan'
+import passport from 'passport'
+import session from 'express-session'
 import bodyParser from 'body-parser'
 
 const config = require("./config.json")
@@ -7,8 +9,16 @@ const config = require("./config.json")
 const app = express()
 
 app.use(morgan('short'))
+
+//Body Parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// For Passport
+app.use(session({ secret: config.passport.secret, resave: true, saveUninitialized:true})); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");

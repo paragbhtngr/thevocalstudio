@@ -1,12 +1,21 @@
 import express from 'express'
 import morgan from 'morgan'
+import bodyParser from 'body-parser'
 
 const config = require("./config.json")
 
 const app = express()
-const userRouter = require('./routes/user')
 
 app.use(morgan('short'))
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
+const userRouter = require('./routes/user')
 
 app.get("/", (req, res) => {
     console.log("Responding to root route")

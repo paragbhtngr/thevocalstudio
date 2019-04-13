@@ -3,7 +3,7 @@
  */
 
 import express from 'express'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt-nodejs'
 
 const saltRounds = 10
 const router = express.Router()
@@ -25,24 +25,51 @@ router.get('/', (req, res) => {
 
 // TODO: Create New User
 router.post('/createnewuser', (req, res) => {
-    let userExists = false
+    // Received create user request
+    let user = req.body
+    user.password = encryptPassword(user.password)
+    console.log(user);
     // Check if user with email address already exists
-    const queryString = 'SELECT * FROM users WHERE email_address = ?'
-    connection.query(queryString, [email], (error, results, fields) => {
+    const queryString = `SELECT * FROM users WHERE email_address = '${user.emailAddress}'`
+    connection.query(queryString, (error, results, fields) => {
         if (error) {
-            throw error;
+            throw error
         }
 
-        console.log('Users in DB: ', results);
+        console.log('Users in DB: ', results)
         // If user already exists
-        userExists = true
-        // Return Error Message: User Exists
-    });
-
-    if(!userExists) {
-        //Create new user
-    }
-    res.end()
+        if(results.length > 0) {
+            console.log('USER EXISTS')
+            // Return Error Message: User Exists
+            res.send({
+                "code":400,
+                "failed":"user_exists",
+                "message":"User already exists in database"
+            })
+            return
+        } else {
+            //Create new user
+            console.log("CREATING NEW USER")
+            const queryString = `INSERT INTO users (\`first_name\`, \`last_name\`, \`email_address\`, \`password\`, \`is_admin\`) VALUES (
+            '${user.firstName}',
+            '${user.lastName}', 
+            '${user.emailAddress}',
+            '${user.password}', 
+            '${0}');
+            `
+            connection.query(queryString, (error, results, fields) => {
+                if (error) {
+                    throw error
+                }
+            })
+            res.send({
+                "code":200,
+                "succeeded":"user_created",
+                "message":"User successfully registered in database"
+            })
+            return
+        }
+    })
 })
 
 // TODO: Login
@@ -68,15 +95,11 @@ router.post('/deleteuser', (req, res) => {
 
 // Helper functions
 let encryptPassword = (password) => {
-    bcrypt.hash(password, saltRounds, function(err, hash) {
-        return hash
-    })
+    return bcrypt.hashSync(password)
 }
 
 let comparePassword = (password, hash) => {
-    bcrypt.compare(password, hash, function(err, res) {
-        return res
-    })
+    return bcrypt.compareSync(password, hash)  
 }
 
 module.exports = router

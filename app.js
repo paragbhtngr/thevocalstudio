@@ -11,19 +11,31 @@ const app = express()
 app.use(morgan('short'))
 
 //Body Parser
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 
-// For Passport
-app.use(session({ secret: config.passport.secret, resave: true, saveUninitialized:true})); // session secret
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
+// // For Passport
+// app.use(session({ secret: config.passport.secret, resave: true, saveUninitialized:true})) // session secret
+// app.use(passport.initialize())
+// app.use(passport.session()) // persistent login sessions
+
+// var env = require('dotenv').config()
 
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+    res.header("Access-Control-Allow-Origin", "*")
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+    next()
 });
+
+//Models
+// var models = require("./models");
+ 
+//Sync Database
+// models.sequelize.sync().then(function() {
+//     console.log('Nice! Database looks fine')
+// }).catch(function(err) {
+//     console.log(err, "Something went wrong with the Database Update!")
+// });
 
 const userRouter = require('./routes/user')
 

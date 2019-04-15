@@ -4,10 +4,10 @@ const config = require("./config.json")
 
 var pool = mysql.createPool({
     connectionLimit: 10,
-    host: config.db.host,
-    user: config.db.user,
-    password: config.db.password,
-    database: config.db.database
+    host: config.db.development.host,
+    user: config.db.development.user,
+    password: config.db.development.password,
+    database: config.db.development.database
 });
 
 var getConnection = () => {

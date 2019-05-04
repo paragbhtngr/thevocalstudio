@@ -15,6 +15,12 @@ router.get('/', (req, res) => {
     res.end()
 })
 
+//TODO: Get audio files 
+router.post('/getaudio', (req, res, next) => {
+    let { category } = req.body
+    res.send(`Sending over audio in category ${category}`)
+})
+
 // TODO: Upload audio file
 router.post('/upload', (req, res) => {
     let form = new formidable.IncomingForm();
